@@ -2,17 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Document extends Model
 {
-protected $fillable = ['user_id', 'type', 'file_path', 'status', 'observation'];
+    use HasFactory;
 
-    /**
-     * Relación con el modelo User.
-     */
-    public function user(): BelongsTo
+    protected $fillable = [
+        'user_id',
+        'tramite_id',
+        'type',
+        'file_path',
+        'status',
+        'observation',
+    ];
+
+    public function tramite()
+    {
+        return $this->belongsTo(Tramite::class);
+    }
+
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

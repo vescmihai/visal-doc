@@ -6,6 +6,25 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\TramiteController;
+
+Route::middleware(['auth'])->group(function () {
+    // Ruta para mostrar la lista de trámites
+    Route::get('/tramites', [TramiteController::class, 'index'])->name('tramites.index');
+
+    // Ruta para crear un nuevo trámite
+    Route::get('/tramites/create', [TramiteController::class, 'create'])->name('tramites.create');
+    Route::post('/tramites', [TramiteController::class, 'store'])->name('tramites.store');
+
+    // Ruta para gestionar un trámite específico
+    Route::get('/tramites/{tramite}/gestionar', [TramiteController::class, 'gestionar'])->name('tramites.gestionar');
+    
+    // Ruta para actualizar la observación de un trámite
+    Route::put('/tramites/{tramite}/update-observation', [TramiteController::class, 'updateObservation'])->name('tramites.update-observation');
+    
+    // Ruta para actualizar el estado de un trámite
+    Route::put('/tramites/{tramite}/update-status', [TramiteController::class, 'updateStatus'])->name('tramites.update-status');
+});
 
 Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar la lista de documentos
@@ -23,11 +42,10 @@ Route::middleware(['auth'])->group(function () {
     // Ruta para eliminar un documento
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
     Route::put('/documents/{id}', [DocumentController::class, 'update'])->name('documents.update');
-
 });
 
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Rutas para gestionar usuarios
     Route::resource('users', UserController::class)->except(['show']);
 });
 
@@ -45,6 +63,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Rutas para gestionar perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

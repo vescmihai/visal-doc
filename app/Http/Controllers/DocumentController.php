@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Document;
+use App\Models\Tramite;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
@@ -13,21 +14,28 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        // Obtiene documentos con la relación 'user' cargada
-        $documents = Document::with('user')->get();
-        
+        // Obtiene todos los documentos con la relación de usuario y trámite
+        $documents = Document::with(['user', 'tramite'])->get();
+    
         return Inertia::render('Documents/Index', [
-            'documents' => $documents
+            'documents' => $documents,
         ]);
     }
+    
 
     /**
      * Muestra el formulario para crear un nuevo documento.
      */
     public function create()
     {
-        return Inertia::render('Documents/Create'); // Vista para crear documentos
+        // Obtiene la lista de trámites disponibles
+        $tramites = Tramite::all();
+    
+        return Inertia::render('Documents/Create', [
+            'tramites' => $tramites, // Pasa los trámites a la vista
+        ]);
     }
+    
 
     /**
      * Almacena un nuevo documento en la base de datos.
@@ -37,7 +45,8 @@ class DocumentController extends Controller
         // Validación de los datos de entrada
         $validated = $request->validate([
             'type' => 'required|string',
-            'file' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'tramite_id' => 'nullable|exists:tramites,id', // Validar trámite asociado
         ]);
 
         // Guardar el archivo en el almacenamiento público
@@ -45,16 +54,19 @@ class DocumentController extends Controller
 
         // Crear el documento en la base de datos
         Document::create([
-            'user_id' => auth()->id(), // Asegúrate de que el usuario esté autenticado
+            'user_id' => auth()->id(), // Usuario autenticado
             'type' => $validated['type'],
             'file_path' => $path,
+            'tramite_id' => $validated['tramite_id'], // Asociar al trámite si se selecciona
         ]);
 
         // Redirige a la lista de documentos con un mensaje de éxito
         return redirect()->route('documents.index')->with('message', 'Documento subido con éxito.');
     }
 
-
+    /**
+     * Actualiza el estado y la observación de un documento.
+     */
     public function update(Request $request, $id)
     {
         // Validación
@@ -62,30 +74,30 @@ class DocumentController extends Controller
             'status' => 'required|in:Pendiente,Aprobado,Rechazado',
             'observation' => 'nullable|string',
         ]);
-    
+
         // Encontrar el documento
         $document = Document::findOrFail($id);
-    
+
         // Actualizar documento
         $document->update([
             'status' => $validated['status'],
-            'observation' => $validated['observation'] ?? $document->observation, // Mantener la observación anterior si no se envía una nueva
+            'observation' => $validated['observation'] ?? $document->observation, // Mantener observación anterior
         ]);
-    
+
         return response()->json([
             'message' => 'Documento actualizado con éxito',
             'document' => $document,
         ]);
     }
-    
-
-    
 
     /**
      * Elimina un documento.
      */
     public function destroy(Document $document)
     {
+        // Eliminar el archivo físico del almacenamiento (opcional)
+        \Storage::disk('public')->delete($document->file_path);
+
         // Eliminar el documento de la base de datos
         $document->delete();
 

@@ -19,6 +19,7 @@
           <tr class="bg-gray-200 text-gray-700">
             <th class="border border-gray-300 px-4 py-2">Usuario</th>
             <th class="border border-gray-300 px-4 py-2">Tipo</th>
+            <th class="border border-gray-300 px-4 py-2">Trámite</th> <!-- Nueva columna para el trámite -->
             <th class="border border-gray-300 px-4 py-2">Estado</th>
             <th class="border border-gray-300 px-4 py-2">Observación</th>
             <th class="border border-gray-300 px-4 py-2">Acciones</th>
@@ -28,6 +29,8 @@
           <tr v-for="doc in documents" :key="doc.id" class="text-gray-700 hover:bg-gray-100">
             <td class="border border-gray-300 px-4 py-2">{{ doc.user.name }}</td> <!-- Mostrar el nombre del usuario -->
             <td class="border border-gray-300 px-4 py-2">{{ doc.type }}</td>
+            <!-- Mostrar el título del trámite asociado -->
+            <td class="border border-gray-300 px-4 py-2">{{ doc.tramite ? doc.tramite.title : 'Sin trámite' }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ doc.status }}</td>
             <td class="border border-gray-300 px-4 py-2">
               <!-- Input de observación siempre habilitado -->
