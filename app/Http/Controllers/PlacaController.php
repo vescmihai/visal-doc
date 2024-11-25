@@ -11,7 +11,7 @@ class PlacaController extends Controller
 {
     public function create()
     {
-        $tramites = Tramite::all(); // Obtener todos los trámites disponibles
+        $tramites = Tramite::all(); 
         return inertia('Placas/Create', [
             'tramites' => $tramites,
         ]);
@@ -28,7 +28,6 @@ class PlacaController extends Controller
             'pago' => 'required|string',
         ]);
 
-        // Crear la nueva placa y asociarla al trámite
         Placa::create([
             'tramite_id' => $validated['tramite_id'],
             'placa' => $validated['placa'],
@@ -38,7 +37,6 @@ class PlacaController extends Controller
             'pago' => $validated['pago'],
         ]);
 
-        // Redirigir al usuario después de guardar
         return redirect()->route('tramites.index');
     }
     public function index()
@@ -49,7 +47,6 @@ class PlacaController extends Controller
         ]);
     }
 
-    // Eliminar una placa
     public function destroy($id)
     {
         $placa = Placa::findOrFail($id);

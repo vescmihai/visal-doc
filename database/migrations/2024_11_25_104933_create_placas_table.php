@@ -18,7 +18,6 @@ class CreatePlacasTable extends Migration
             $table->enum('pago', ['Pendiente', 'Pagado'])->default('Pendiente');
             $table->timestamps();
 
-            // Definir la relación con la tabla de trámites
             $table->foreign('tramite_id')->references('id')->on('tramites')->onDelete('cascade');
         });
     }

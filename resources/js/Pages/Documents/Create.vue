@@ -21,7 +21,6 @@
             {{ type }}
           </option>
         </select>
-        <!-- Mensaje de error si el tipo de documento ya está registrado -->
         <p v-if="documentAlreadyExists" class="text-red-500 text-sm mt-2">
           El tipo de documento seleccionado ya ha sido registrado para este trámite.
         </p>
@@ -74,14 +73,14 @@ import { Inertia } from "@inertiajs/inertia";
 
 export default {
   props: {
-    tramites: Array, // Recibe los trámites desde el controlador
-    documentosRegistrados: Array, // Recibe los documentos ya registrados para cada trámite
+    tramites: Array, 
+    documentosRegistrados: Array, 
   },
   setup(props) {
     const form = reactive({
       type: "",
       file: null,
-      tramite_id: null, // Almacena el ID del trámite seleccionado
+      tramite_id: null, 
     });
 
     // Tipos de documentos predefinidos
@@ -93,52 +92,40 @@ export default {
       "Póliza simple",
     ];
 
-    // Lista de tipos de documentos disponibles (se actualiza según el trámite seleccionado)
     const availableDocumentTypes = reactive([...documentTypes]);
 
-    // Variable para verificar si el documento ya está registrado
     const documentAlreadyExists = reactive(false);
 
-    // Función para manejar la subida de archivos
     const handleFileUpload = (event) => {
       form.file = event.target.files[0];
     };
 
-    // Función para actualizar los tipos de documentos disponibles según el trámite seleccionado
     const updateAvailableDocumentTypes = () => {
       if (form.tramite_id) {
-        // Filtra los documentos ya registrados para el trámite seleccionado
         const existingDocuments = props.documentosRegistrados.filter(
           (doc) => doc.tramite_id === form.tramite_id
         ).map((doc) => doc.type);
 
-        // Elimina los tipos de documentos ya registrados del array de opciones
-        availableDocumentTypes.length = 0; // Limpiar la lista de documentos disponibles
+        availableDocumentTypes.length = 0; 
         documentTypes.forEach((type) => {
           if (!existingDocuments.includes(type)) {
             availableDocumentTypes.push(type);
           }
         });
 
-        // Verificar si el documento seleccionado ya está registrado para el trámite
         documentAlreadyExists.value = existingDocuments.includes(form.type);
       } else {
-        // Si no hay trámite seleccionado, mostrar todos los tipos de documentos
         availableDocumentTypes.length = 0;
         availableDocumentTypes.push(...documentTypes);
         documentAlreadyExists.value = false;
       }
     };
 
-    // Observa el cambio en el trámite y actualiza los tipos de documentos disponibles
     watch(() => form.tramite_id, updateAvailableDocumentTypes);
 
-    // Función para enviar el formulario
     const submit = () => {
-      // Verificar si el tipo de documento ya está registrado antes de enviar el formulario
       if (documentAlreadyExists.value) {
-        // Si el documento ya está registrado, mostramos un mensaje de error y no enviamos el formulario
-        return; // No enviamos el formulario si el documento ya existe
+        return; 
       }
 
       const formData = new FormData();
@@ -151,7 +138,7 @@ export default {
 
     return {
       form,
-      tramites: props.tramites, // Listado de trámites
+      tramites: props.tramites, 
       availableDocumentTypes,
       documentAlreadyExists,
       handleFileUpload,

@@ -3,7 +3,6 @@
     <div class="p-6 bg-gray-100 min-h-screen">
       <h1 class="text-3xl font-bold mb-6 text-gray-800">Gestión de Placas</h1>
 
-      <!-- Botón para crear una nueva placa -->
       <div class="mb-6">
         <Link
           href="/placas/create"
@@ -13,7 +12,6 @@
         </Link>
       </div>
 
-      <!-- Mostrar mensaje si no hay placas registradas -->
       <p v-if="!placas || placas.length === 0" class="text-gray-500">
         No hay placas registradas.
       </p>
@@ -75,20 +73,17 @@ export default {
   },
   setup() {
     const { props } = usePage();
-    const placas = ref(props.placas || []); // Manejo de datos vacíos
+    const placas = ref(props.placas || []); 
 
-    // Función para editar una placa
     const editPlaca = (placa) => {
       Inertia.visit(`/placas/${placa.id}/edit`);
     };
 
-    // Función para eliminar una placa
     const deletePlaca = (placaId) => {
       if (confirm('¿Estás seguro de eliminar esta placa?')) {
         axios
           .delete(`/placas/${placaId}`)
           .then((response) => {
-            // Filtrar la placa eliminada del array
             placas.value = placas.value.filter((placa) => placa.id !== placaId);
             console.log('Placa eliminada:', response.data);
           })

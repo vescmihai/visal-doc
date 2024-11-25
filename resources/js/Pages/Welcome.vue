@@ -17,7 +17,7 @@
       <section class="hero relative bg-cover bg-center text-white py-32 px-6" style="background-image: url('/storage/hero-image.jpg');">
         <div class="hero-overlay absolute inset-0 bg-black opacity-50"></div>
         <div class="hero-content relative z-10 text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">Gestión de Placas para Motocicletas 0km</h1>
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">Visal Import Export S.A.</h1>
           <p class="text-xl md:text-2xl mb-6">El proceso más rápido, seguro y sencillo para obtener la placa de tu moto nueva.</p>
           <button @click="navigateToForm" class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-full text-lg font-semibold transition">Solicita tu trámite ahora</button>
         </div>

@@ -98,11 +98,10 @@ export default {
       motor: '',
       chasis: '',
       poliza: '',
-      pago: 'Pendiente', // El pago se registra por defecto como pendiente
+      pago: 'Pendiente', 
     });
 
     const submit = () => {
-      // Enviar los datos de la placa al backend
       Inertia.post(route('placas.store'), form.value);
     };
 

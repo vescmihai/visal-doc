@@ -87,16 +87,16 @@ export default {
   },
   setup() {
     const { props } = usePage();
-    const tramites = ref(props.tramites || []); // Manejo de datos vacíos
+    const tramites = ref(props.tramites || []); 
 
     const updateStatus = (tramite, status) => {
       axios
         .put(`/tramites/${tramite.id}/update-status`, {
           status: status,
-          observation: tramite.observation || '', // Manejo de valores nulos
+          observation: tramite.observation || '', 
         })
         .then((response) => {
-          tramite.status = status; // Actualiza el estado en la vista
+          tramite.status = status; 
           console.log('Trámite actualizado:', response.data);
         })
         .catch((error) => {

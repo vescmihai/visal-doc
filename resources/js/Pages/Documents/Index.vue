@@ -137,18 +137,18 @@ export default {
     // Actualizar el estado de un documento
     const updateStatus = (doc, status) => {
       const data = {
-        status: status, // Enviar el estado
-        observation: doc.observation || ""  // Enviar la observación si está presente
+        status: status, 
+        observation: doc.observation || ""  
       };
 
       axios
-        .put(`/documents/${doc.id}`, data)  // Enviar los datos como JSON
+        .put(`/documents/${doc.id}`, data)  
         .then((response) => {
-          console.log(response.data); // Ver respuesta exitosa
-          doc.status = status;  // Actualiza el estado en la vista
+          console.log(response.data); 
+          doc.status = status;  
         })
         .catch((error) => {
-          console.error("Error al actualizar el estado:", error.response.data); // Ver detalles del error
+          console.error("Error al actualizar el estado:", error.response.data); 
         });
     };
 

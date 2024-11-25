@@ -55,7 +55,6 @@
           </select>
         </div>
   
-        <!-- Botón de submit -->
         <div>
           <button
             type="submit"

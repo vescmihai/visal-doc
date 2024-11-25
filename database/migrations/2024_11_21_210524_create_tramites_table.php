@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('tramites', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Nombre del trámite
-            $table->string('status')->default('Pendiente'); // Estado del trámite (Pendiente, Completado)
-            $table->foreignId('user_id') // Columna que relaciona el trámite con el usuario
-                  ->constrained() // Esto hace que se refiera a la tabla 'users'
-                  ->onDelete('cascade'); // Si un usuario es eliminado, sus trámites también serán eliminados
-            $table->text('observation')->nullable(); // Columna de observación, puede ser nula
+            $table->string('title'); 
+            $table->string('status')->default('Pendiente'); 
+            $table->foreignId('user_id') 
+                  ->constrained() 
+                  ->onDelete('cascade'); 
+            $table->text('observation')->nullable();
             $table->timestamps();
         });
     }

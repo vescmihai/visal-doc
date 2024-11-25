@@ -47,7 +47,6 @@
         </table>
       </div>
       <div class="mt-6">
-        <!-- Enlace para Crear nuevo Usuario -->
         <Link
           :href="route('users.create')"
           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -60,18 +59,17 @@
   </template>
   
   <script setup>
-    import { Link } from '@inertiajs/vue3'; // Asegúrate de importar Link de Inertia.js
-    import { Inertia } from '@inertiajs/inertia'; // Importar Inertia explícitamente
+    import { Link } from '@inertiajs/vue3'; 
+    import { Inertia } from '@inertiajs/inertia'; 
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     
     const props = defineProps(['users']);
     
     const destroy = (id) => {
       if (confirm('¿Estás seguro de eliminar este usuario?')) {
-        // Realizar la solicitud DELETE utilizando la redirección de Inertia
         Inertia.visit(route('users.destroy', id), {
           method: 'delete',
-          preserveState: true, // Si no deseas cambiar el estado de la página
+          preserveState: true, 
         });
       }
     };

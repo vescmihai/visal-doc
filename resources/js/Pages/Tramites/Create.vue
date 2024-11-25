@@ -28,7 +28,7 @@
 <script>
 import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';  // Verifica que la ruta sea correcta
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';  
 
 export default {
   components: {

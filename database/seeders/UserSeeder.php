@@ -15,12 +15,11 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Crear un usuario con los datos proporcionados
         DB::table('users')->insert([
             'name' => 'Mihai',
             'email' => 'mihai@gmail.com',
-            'password' => Hash::make('12345678'), // Hashear la contraseña
-            'role' => 'cliente', // Asignar el rol 'cliente' por defecto
+            'password' => Hash::make('12345678'), 
+            'role' => 'cliente', 
             'created_at' => now(),
             'updated_at' => now(),
         ]);

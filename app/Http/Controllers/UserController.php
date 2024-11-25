@@ -51,7 +51,6 @@ class UserController extends Controller
             'role' => 'required|in:cliente,gestor,admin',
         ]);
     
-        // Si la validación pasa, actualiza el usuario
         $user->update($request->only('name', 'email', 'role'));
     
         return redirect()->route('users.index');
