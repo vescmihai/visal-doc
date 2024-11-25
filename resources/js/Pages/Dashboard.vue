@@ -7,9 +7,9 @@
         </div>
         <nav class="navigation ml-auto">
           <ul class="flex space-x-6">
-            <li><a href="#services" class="text-lg font-semibold hover:text-orange-500 transition">Servicios</a></li>
-            <li><a href="#about" class="text-lg font-semibold hover:text-orange-500 transition">Sobre Nosotros</a></li>
-            <li><a href="#contact" class="text-lg font-semibold hover:text-orange-500 transition">Contacto</a></li>
+            <li><a href="login" class="text-lg font-semibold hover:text-orange-500 transition">Iniciar sesión</a></li>
+            <li><a href="register" class="text-lg font-semibold hover:text-orange-500 transition">Registrarse</a></li>
+            <li><a href="profile" class="text-lg font-semibold hover:text-orange-500 transition">Perfil</a></li>
           </ul>
         </nav>
       </header>

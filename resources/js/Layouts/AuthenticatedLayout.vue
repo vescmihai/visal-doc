@@ -39,6 +39,30 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="route('users.index')"
+                                    :active="route().current('users.index')"
+                                >
+                                    Gestionar usuarios
+                                </NavLink>
+                                <NavLink
+                                    :href="route('tramites.index')"
+                                    :active="route().current('tramites.index')"
+                                >
+                                    Gestionar tramites
+                                </NavLink>
+                                <NavLink
+                                    :href="route('documents.index')"
+                                    :active="route().current('documents.index')"
+                                >
+                                    Gestionar documentos
+                                </NavLink>
+                                <NavLink
+                                    :href="route('placas.index')"
+                                    :active="route().current('placas.index')"
+                                >
+                                    Gestionar placas
+                                </NavLink>
                             </div>
                         </div>
 

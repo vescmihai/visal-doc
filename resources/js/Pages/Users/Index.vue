@@ -1,4 +1,5 @@
 <template>
+  <AuthenticatedLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
       <h1 class="text-3xl font-bold mb-6 text-gray-800">Gestión de Usuarios</h1>
       <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
@@ -55,11 +56,13 @@
         </Link>
       </div>
     </div>
+  </AuthenticatedLayout>
   </template>
   
   <script setup>
     import { Link } from '@inertiajs/vue3'; // Asegúrate de importar Link de Inertia.js
     import { Inertia } from '@inertiajs/inertia'; // Importar Inertia explícitamente
+    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     
     const props = defineProps(['users']);
     

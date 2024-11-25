@@ -1,4 +1,5 @@
 <template>
+  <AuthenticatedLayout>
   <div class="p-6 bg-gray-100 min-h-screen">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Gestión de Documentos</h1>
 
@@ -87,6 +88,7 @@
       </div>
     </div>
   </div>
+</AuthenticatedLayout>
 </template>
 
 <script>
@@ -95,10 +97,12 @@ import { usePage } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
 import { Inertia } from "@inertiajs/inertia";
 import axios from "axios";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 export default {
   components: {
     Link,
+    AuthenticatedLayout,
   },
   setup() {
     const { props } = usePage();

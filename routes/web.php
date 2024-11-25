@@ -7,6 +7,15 @@ use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TramiteController;
+use App\Http\Controllers\PlacaController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/placas', [PlacaController::class, 'index'])->name('placas.index');
+    Route::get('/placas/create', [PlacaController::class, 'create'])->name('placas.create');
+    Route::post('/placas', [PlacaController::class, 'store'])->name('placas.store');
+    Route::delete('/placas/{placa}', [PlacaController::class, 'destroy'])->name('placas.destroy');
+});
+
 
 Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar la lista de trámites

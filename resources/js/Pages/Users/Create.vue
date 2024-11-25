@@ -1,4 +1,5 @@
 <template>
+  <AuthenticatedLayout>
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
       <h1 class="text-3xl font-semibold text-gray-800 mb-6">Crear Usuario</h1>
       
@@ -65,10 +66,12 @@
         </div>
       </form>
     </div>
+  </AuthenticatedLayout>
   </template>
   
   <script setup>
     import { useForm } from '@inertiajs/vue3';
+    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
   
     const form = useForm({
       name: '',
