@@ -1,93 +1,117 @@
 <template>
-    <div class="landing-page">
-      <!-- Header Section -->
-      <header class="header bg-gray-900 text-white py-4 px-8 shadow-md flex items-center justify-between">
-        <div class="logo">
-          <img src="/storage/Honda-Logo.png" alt="Visal Import Export S.A." class="h-12"/>
-        </div>
-        <nav class="navigation ml-auto">
-          <ul class="flex space-x-6">
-            <li><a href="login" class="text-lg font-semibold hover:text-orange-500 transition">Iniciar sesión</a></li>
-            <li><a href="register" class="text-lg font-semibold hover:text-orange-500 transition">Registrarse</a></li>
-          </ul>
-        </nav>
-      </header>
-  
-      <!-- Hero Section -->
-      <section class="hero relative bg-cover bg-center text-white py-32 px-6" style="background-image: url('/storage/hero-image.jpg');">
-        <div class="hero-overlay absolute inset-0 bg-black opacity-50"></div>
-        <div class="hero-content relative z-10 text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">Visal Import Export S.A.</h1>
-          <p class="text-xl md:text-2xl mb-6">El proceso más rápido, seguro y sencillo para obtener la placa de tu moto nueva.</p>
-          <button @click="navigateToForm" class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-full text-lg font-semibold transition">Solicita tu trámite ahora</button>
-        </div>
-      </section>
-  
-      <!-- Services Section -->
-      <section id="services" class="services py-20 text-center">
-        <h2 class="text-3xl font-bold text-gray-800 mb-12">Servicios</h2>
-        <div class="service-items grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          <div class="service-item p-6 bg-white shadow-lg rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Gestión Rápida de Placas</h3>
-            <p>Nos encargamos de todo el proceso de registro de placas para motos nuevas, sin complicaciones.</p>
-          </div>
-          <div class="service-item p-6 bg-white shadow-lg rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Asesoramiento Legal</h3>
-            <p>Te proporcionamos toda la información necesaria sobre los requisitos legales para obtener la placa.</p>
-          </div>
-          <div class="service-item p-6 bg-white shadow-lg rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Seguimiento de Proceso</h3>
-            <p>Te mantenemos informado durante todo el proceso con notificaciones en tiempo real.</p>
-          </div>
-        </div>
-      </section>
-  
-      <!-- About Section -->
-      <section id="about" class="about py-20 bg-gray-100 text-center">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">Sobre Visal Import Export S.A.</h2>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-          En <strong>Visal Import Export S.A.</strong>, nos especializamos en la gestión de trámites de placas para motocicletas 0km en Bolivia. Contamos con un equipo de expertos que te guiarán durante todo el proceso de forma eficiente y segura. Nuestro compromiso es ofrecerte el mejor servicio con una atención personalizada.
+  <div class="landing-page">
+    <!-- Header Section -->
+    <header class="bg-gray-900 text-white py-4 px-8 shadow-md flex items-center justify-between">
+      <div class="logo flex items-center space-x-2">
+        <img src="/storage/Honda-Logo.png" alt="Visal Import Export S.A." class="h-12" />
+        <span class="text-lg font-bold tracking-wide">Visal Import Export S.A.</span>
+      </div>
+      <nav class="ml-auto">
+        <ul class="flex space-x-6 items-center">
+          <li v-if="isAuthenticated">
+            <a href="/dashboard" class="text-lg font-semibold hover:text-orange-500 transition">Dashboard</a>
+          </li>
+          <li v-else>
+            <a href="/login" class="text-lg font-semibold hover:text-orange-500 transition">Iniciar sesión</a>
+          </li>
+          <li v-if="!isAuthenticated">
+            <a href="/register" class="text-lg font-semibold bg-orange-500 text-white py-2 px-4 rounded-full hover:bg-orange-600 transition">
+              Registrarse
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-cover bg-center py-32 px-6" style="background-image: url('/storage/hero-image.jpg');">
+      <div class="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-80"></div>
+      <div class="relative z-10 text-left max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-6xl font-extrabold leading-tight text-white mb-6">
+          Simplifica <br />
+          <span class="text-orange-500">tu trámite</span> con nosotros.
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-8">
+          Gestión rápida, segura y sencilla para obtener la placa de tu moto nueva. 
         </p>
-      </section>
-  
-      <!-- Contact Section -->
-      <section id="contact" class="contact py-20">
-        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Contacto</h2>
-        <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-8">
-          <form class="space-y-6">
-            <div class="flex flex-col">
-              <label for="name" class="text-gray-700 font-semibold">Nombre</label>
-              <input type="text" id="name" placeholder="Tu nombre" class="py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
+        <button
+          @click="navigateToForm"
+          class="bg-orange-500 hover:bg-orange-600 text-white py-4 px-8 rounded-full text-lg font-bold shadow-lg transition"
+        >
+          Solicitar trámite ahora
+        </button>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-100">
+      <div class="max-w-6xl mx-auto text-center">
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-12">Nuestros Servicios</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div class="service-item bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition transform hover:-translate-y-2">
+            <div class="flex items-center justify-center mb-6">
+              <svg class="h-12 w-12 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3M13 7l6 6-6 6" />
+              </svg>
             </div>
-            <div class="flex flex-col">
-              <label for="email" class="text-gray-700 font-semibold">Correo electrónico</label>
-              <input type="email" id="email" placeholder="Tu correo" class="py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Gestión Rápida de Placas</h3>
+            <p class="text-gray-600">Facilitamos el registro de placas para motos nuevas, sin complicaciones.</p>
+          </div>
+          <div class="service-item bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition transform hover:-translate-y-2">
+            <div class="flex items-center justify-center mb-6">
+              <svg class="h-12 w-12 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.25 0-2.25 1-2.25 2.25S10.75 12.5 12 12.5s2.25-1 2.25-2.25S13.25 8 12 8zm-6.75 4c0-1.25 1-2.25 2.25-2.25s2.25 1 2.25 2.25-1 2.25-2.25 2.25-2.25-1-2.25-2.25zM18 10c-1.25 0-2.25 1-2.25 2.25S16.75 14.5 18 14.5s2.25-1 2.25-2.25S19.25 10 18 10z" />
+              </svg>
             </div>
-            <div class="flex flex-col">
-              <label for="message" class="text-gray-700 font-semibold">Mensaje</label>
-              <textarea id="message" placeholder="Tu mensaje" class="py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"></textarea>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Asesoramiento Legal</h3>
+            <p class="text-gray-600">Ofrecemos orientación profesional sobre requisitos legales.</p>
+          </div>
+          <div class="service-item bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition transform hover:-translate-y-2">
+            <div class="flex items-center justify-center mb-6">
+              <svg class="h-12 w-12 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M3 10h11M9 21V3" />
+              </svg>
             </div>
-            <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg text-lg font-semibold transition">Enviar</button>
-          </form>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Seguimiento Personalizado</h3>
+            <p class="text-gray-600">Te mantenemos informado durante todo el proceso.</p>
+          </div>
         </div>
-      </section>
-  
-      <!-- Footer Section -->
-      <footer class="footer bg-gray-900 text-white py-6 text-center">
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gray-900 text-white">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-4xl font-extrabold mb-6">¿Quiénes Somos?</h2>
+        <p class="text-lg text-gray-300 leading-relaxed">
+          En <strong>Visal Import Export S.A.</strong>, somos líderes en la gestión de trámites para motocicletas 0km. Nuestra misión es garantizar un proceso rápido y confiable, respaldado por un equipo experto y tecnología de vanguardia.
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
         <p>&copy; 2024 Visal Import Export S.A. | Todos los derechos reservados.</p>
-      </footer>
-    </div>
-  </template>
-  
-  <script setup>
-    import { ref } from 'vue';
-  
-    const navigateToForm = () => {
-      window.location.href = '/solicitar-tramite';
-    };
-  </script>
-  
-  <style scoped>
-    /* Tailwind CSS is used for styling, no additional styles are needed here */
-  </style>
-  
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const { props } = usePage();
+
+const isAuthenticated = computed(() => !!props.auth?.user);
+
+const navigateToForm = () => {
+  window.location.href = '/solicitar-tramite';
+};
+</script>

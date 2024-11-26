@@ -1,11 +1,10 @@
 <template>
   <AuthenticatedLayout>
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Crear Usuario</h1>
-      
+    <div class="max-w-2xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">
+      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Registrar Usuario</h1>
+
       <form @submit.prevent="submit" class="space-y-6">
         
-        <!-- Nombre -->
         <div class="flex flex-col">
           <label for="name" class="text-gray-700 font-medium mb-2">Nombre:</label>
           <input
@@ -17,7 +16,6 @@
           />
         </div>
         
-        <!-- Email -->
         <div class="flex flex-col">
           <label for="email" class="text-gray-700 font-medium mb-2">Email:</label>
           <input
@@ -29,7 +27,6 @@
           />
         </div>
         
-        <!-- Contraseña -->
         <div class="flex flex-col">
           <label for="password" class="text-gray-700 font-medium mb-2">Contraseña:</label>
           <input
@@ -41,7 +38,6 @@
           />
         </div>
         
-        <!-- Rol -->
         <div class="flex flex-col">
           <label for="role" class="text-gray-700 font-medium mb-2">Rol:</label>
           <select
@@ -66,21 +62,30 @@
       </form>
     </div>
   </AuthenticatedLayout>
-  </template>
-  
-  <script setup>
-    import { useForm } from '@inertiajs/vue3';
-    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-  
-    const form = useForm({
-      name: '',
-      email: '',
-      password: '',
-      role: 'cliente',
-    });
-  
-    const submit = () => {
-      form.post(route('users.store'));
-    };
-  </script>
-  
+</template>
+
+<script setup>
+  import { useForm } from '@inertiajs/vue3';
+  import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
+  const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    role: 'cliente',
+  });
+
+  const submit = () => {
+    form.post(route('users.store'));
+  };
+</script>
+
+<style scoped>
+input, select {
+  transition: all 0.3s ease;
+}
+input:focus, select:focus {
+  border-color: #2563eb; 
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+</style>

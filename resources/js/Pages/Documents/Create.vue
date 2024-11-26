@@ -1,77 +1,77 @@
 <template>
-  <div class="p-6 bg-gray-100 min-h-screen">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Crear Nuevo Documento</h1>
+  <AuthenticatedLayout>
+    <div class="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Crear Nuevo Documento</h1>
 
-    <form @submit.prevent="submit">
-      <!-- Campo Tipo de Documento -->
-      <div class="mb-4">
-        <label for="type" class="block text-gray-700 font-bold mb-2">Tipo de Documento:</label>
-        <select
-          id="type"
-          v-model="form.type"
-          class="w-full px-4 py-2 border border-gray-300 rounded"
-          required
-        >
-          <option value="" disabled>Seleccione un tipo de documento</option>
-          <option
-            v-for="type in availableDocumentTypes"
-            :key="type"
-            :value="type"
+      <form @submit.prevent="submit">
+        <div class="mb-4">
+          <label for="type" class="block text-gray-700 font-semibold mb-2">Tipo de Documento:</label>
+          <select
+            id="type"
+            v-model="form.type"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required
           >
-            {{ type }}
-          </option>
-        </select>
-        <p v-if="documentAlreadyExists" class="text-red-500 text-sm mt-2">
-          El tipo de documento seleccionado ya ha sido registrado para este trámite.
-        </p>
-      </div>
+            <option value="" disabled>Seleccione un tipo de documento</option>
+            <option v-for="type in availableDocumentTypes" :key="type" :value="type">
+              {{ type }}
+            </option>
+          </select>
+          <p v-if="documentAlreadyExists" class="text-red-500 text-sm mt-2">
+            El tipo de documento seleccionado ya ha sido registrado para este trámite.
+          </p>
+        </div>
 
-      <!-- Campo Archivo -->
-      <div class="mb-4">
-        <label for="file" class="block text-gray-700 font-bold mb-2">Archivo:</label>
-        <input
-          id="file"
-          type="file"
-          @change="handleFileUpload"
-          class="w-full px-4 py-2 border border-gray-300 rounded"
-          required
-        />
-      </div>
+        <div class="mb-4">
+          <label for="file" class="block text-gray-700 font-semibold mb-2">Archivo:</label>
+          <input
+            id="file"
+            type="file"
+            @change="handleFileUpload"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required
+          />
+          <p v-if="fileTypeError" class="text-red-500 text-sm mt-2">
+            El archivo debe ser una imagen (JPG, JPEG, PNG, GIF) o un PDF.
+          </p>
+        </div>
 
-      <!-- Campo Trámite Asociado -->
-      <div class="mb-4">
-        <label for="tramite_id" class="block text-gray-700 font-bold mb-2">Trámite Asociado:</label>
-        <select
-          id="tramite_id"
-          v-model="form.tramite_id"
-          @change="updateAvailableDocumentTypes"
-          class="w-full px-4 py-2 border border-gray-300 rounded"
-          required
+        <div class="mb-4">
+          <label for="tramite_id" class="block text-gray-700 font-semibold mb-2">Trámite Asociado:</label>
+          <select
+            id="tramite_id"
+            v-model="form.tramite_id"
+            @change="updateAvailableDocumentTypes"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required
+          >
+            <option value="" disabled>Seleccione un trámite</option>
+            <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
+              {{ tramite.title }}
+            </option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300 transition duration-200"
+          :disabled="documentAlreadyExists || fileTypeError"
         >
-          <option value="" disabled>Seleccione un trámite</option>
-          <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
-            {{ tramite.title }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Botón de Guardar -->
-      <button
-        type="submit"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        :disabled="documentAlreadyExists"
-      >
-        Guardar
-      </button>
-    </form>
-  </div>
+          Guardar
+        </button>
+      </form>
+    </div>
+  </AuthenticatedLayout>
 </template>
 
+
 <script>
-import { reactive, watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import { Inertia } from "@inertiajs/inertia";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 export default {
+  components: { AuthenticatedLayout },
   props: {
     tramites: Array, 
     documentosRegistrados: Array, 
@@ -83,7 +83,6 @@ export default {
       tramite_id: null, 
     });
 
-    // Tipos de documentos predefinidos
     const documentTypes = [
       "Nota de Remisión",
       "Carnet de Identidad",
@@ -94,10 +93,21 @@ export default {
 
     const availableDocumentTypes = reactive([...documentTypes]);
 
-    const documentAlreadyExists = reactive(false);
+    const documentAlreadyExists = ref(false);
+    const fileTypeError = ref(false);  
 
     const handleFileUpload = (event) => {
-      form.file = event.target.files[0];
+      const file = event.target.files[0];
+      if (file) {
+        const fileExtension = file.name.split(".").pop().toLowerCase();
+        if (!["jpg", "jpeg", "png", "gif", "pdf"].includes(fileExtension)) {
+          fileTypeError.value = true;  
+          form.file = null;  
+        } else {
+          fileTypeError.value = false;  
+          form.file = file;  
+        }
+      }
     };
 
     const updateAvailableDocumentTypes = () => {
@@ -124,14 +134,14 @@ export default {
     watch(() => form.tramite_id, updateAvailableDocumentTypes);
 
     const submit = () => {
-      if (documentAlreadyExists.value) {
+      if (documentAlreadyExists.value || fileTypeError.value) {
         return; 
       }
 
       const formData = new FormData();
       formData.append("type", form.type);
       formData.append("file", form.file);
-      formData.append("tramite_id", form.tramite_id); // Agregar el ID del trámite al formulario
+      formData.append("tramite_id", form.tramite_id); 
 
       Inertia.post(route("documents.store"), formData);
     };
@@ -141,10 +151,23 @@ export default {
       tramites: props.tramites, 
       availableDocumentTypes,
       documentAlreadyExists,
+      fileTypeError,  
       handleFileUpload,
       submit,
       updateAvailableDocumentTypes,
     };
   },
+
 };
 </script>
+
+<style scoped>
+input, select {
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+  border-color: #2563eb; 
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+</style>
