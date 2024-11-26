@@ -37,7 +37,7 @@ class PlacaController extends Controller
             'pago' => $validated['pago'],
         ]);
 
-        return redirect()->route('tramites.index');
+        return redirect()->route('placas.index');
     }
     public function index()
     {

@@ -3,7 +3,7 @@
     <div class="p-6 bg-gray-100 min-h-screen">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Placas</h1>
-        <Link href="/placas/create" class="btn-primary">+ Crear Placa</Link>
+        <Link href="/placas/create" class="btn-primary">+ Registrar Placa</Link>
       </div>
 
       <p v-if="!placas || placas.length === 0" class="text-center text-gray-500 text-lg">
@@ -32,17 +32,19 @@
               <td class="px-6 py-4 text-gray-800">{{ placa.chasis }}</td>
               <td class="px-6 py-4 text-gray-800">{{ placa.poliza }}</td>
               <td class="px-6 py-4">
-                <span
-                  class="inline-block px-3 py-1 text-xs font-semibold rounded-full"
-                  :class="{
-                    'bg-green-100 text-green-600': placa.estado_pago === 'Pagado',
-                    'bg-yellow-100 text-yellow-600': placa.estado_pago === 'Pendiente',
-                    'bg-red-100 text-red-600': placa.estado_pago === 'Vencido'
-                  }"
-                >
-                  {{ placa.estado_pago || 'Pendiente' }}
-                </span>
-              </td>
+  <span
+    class="inline-block px-3 py-1 text-xs font-semibold rounded-full transition-all duration-300"
+    :class="{
+      'bg-green-100 text-green-600': placa.pago === 'Pagado',
+      'bg-yellow-100 text-yellow-600': placa.pago === 'Pendiente',
+      'bg-red-100 text-red-600': placa.pago === 'Vencido',
+      'bg-gray-100 text-gray-600': !placa.pago || placa.pago === 'Pendiente'
+    }"
+  >
+    {{ placa.pago || 'Pendiente' }}
+  </span>
+</td>
+
               <td class="px-6 py-4 text-gray-800">
                 <span v-if="placa.tramite">{{ placa.tramite.title }}</span>
                 <span v-else>--</span>
@@ -75,6 +77,7 @@ import { usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Inertia } from '@inertiajs/inertia';
 
 export default {
   components: {
@@ -86,7 +89,7 @@ export default {
     const placas = ref(props.placas || []); 
 
     const editPlaca = (placa) => {
-      Inertia.visit(`/placas/${placa.id}/edit`);
+      Inertia.visit(`/ventas/create/${placa.id}`);
     };
 
     const deletePlaca = (placaId) => {

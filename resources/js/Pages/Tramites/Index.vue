@@ -3,42 +3,48 @@
     <div class="p-6 bg-gray-100 min-h-screen">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Trámites</h1>
+        <!-- Solo mostrar el botón "Generar Trámite" si el usuario no es cliente -->
         <button
           @click="generateTramite"
           class="btn-primary"
+          v-if="auth.user.role !== 'cliente'"
         >
           + Generar Trámite
         </button>
       </div>
 
+      <!-- Mensaje cuando no haya trámites disponibles -->
       <p
-        v-if="!tramites || tramites.length === 0"
+        v-if="!filteredTramites || filteredTramites.length === 0"
         class="text-center text-gray-500 text-lg"
       >
         No hay trámites disponibles.
       </p>
 
+      <!-- Mostrar tabla solo si hay trámites disponibles -->
       <div v-else class="overflow-x-auto bg-white shadow-lg rounded-lg">
         <table class="min-w-full border-collapse text-left text-sm">
           <thead class="bg-gray-200 text-gray-700">
             <tr>
               <th class="px-6 py-3">Código</th>
-              <th class="px-6 py-3">Cliente</th>
+              <th v-if="auth.user.role !== 'cliente'"  class="px-6 py-3">Cliente</th>
               <th class="px-6 py-3">Fecha de Ingreso</th>
               <th class="px-6 py-3">Última Revisión</th>
               <th class="px-6 py-3">Estado</th>
-              <th v-if="auth.user.role !== 'cliente'"class="px-6 py-3">Observación</th>
+              <!-- Solo mostrar columnas de Observación y Acciones si el usuario no es cliente -->
+              <th v-if="auth.user.role !== 'cliente'" class="px-6 py-3">Observación</th>
               <th v-if="auth.user.role !== 'cliente'" class="px-6 py-3 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
+            <!-- Iterar solo sobre los trámites filtrados -->
             <tr
-              v-for="tramite in tramites"
+              v-for="tramite in filteredTramites"
               :key="tramite.id"
               class="hover:bg-gray-50 transition"
             >
               <td class="px-6 py-4 text-gray-800">{{ tramite.title || 'Sin título' }}</td>
-              <td class="px-6 py-4 text-gray-800">{{ tramite.client_name || 'Anónimo' }}</td>
+              <td v-if="auth.user.role !== 'cliente'"  class="px-6 py-4 text-gray-800">{{ tramite.client_name || 'Anónimo' }}</td>
               <td class="px-6 py-4 text-gray-500">{{ tramite.created_at || 'N/D' }}</td>
               <td class="px-6 py-4 text-gray-500">{{ tramite.updated_at || 'N/D' }}</td>
               <td class="px-6 py-4">
@@ -53,6 +59,7 @@
                   {{ tramite.status || 'Desconocido' }}
                 </span>
               </td>
+              <!-- Solo permitir añadir observaciones si no es cliente -->
               <td v-if="auth.user.role !== 'cliente'" class="px-6 py-4">
                 <input
                   v-model="tramite.observation"
@@ -60,6 +67,7 @@
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:ring focus:ring-blue-200"
                 />
               </td>
+              <!-- Mostrar botones de acción solo si el usuario no es cliente -->
               <td v-if="auth.user.role !== 'cliente'" class="px-6 py-4 flex gap-2 justify-center">
                 <button
                   @click="updateStatus(tramite, 'Aprobado')"
@@ -83,10 +91,8 @@
 </template>
 
 
-
-
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -101,7 +107,22 @@ export default {
   },
   setup(props) {
     const tramites = ref(props.tramites || []); 
+    const userId = props.auth.user.id; // Obtener el ID del usuario autenticado
 
+    // Filtrar los trámites si el usuario tiene el rol 'cliente'
+    const filteredTramites = computed(() => {
+  console.log("Trámites disponibles:", tramites.value);  // Verifica los datos completos
+  if (props.auth.user.role === 'cliente') {
+    const filtered = tramites.value.filter(tramite => tramite.user_id === props.auth.user.id);
+    console.log("Trámites filtrados:", filtered);  // Verifica los trámites filtrados
+    return filtered;
+  }
+  return tramites.value;
+});
+
+
+
+    // Generar un título aleatorio para los trámites
     const generateRandomTitle = () => {
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let randomTitle = '';
@@ -111,18 +132,30 @@ export default {
       return randomTitle;
     };
 
-    const generateTramite = () => {
-      const title = generateRandomTitle(); 
+    // Generar un nuevo trámite
+    const generateTramite = async () => {
+  const title = generateRandomTitle();
 
-      Inertia.post(route('tramites.store'), { title })
-        .then((response) => {
-          tramites.value.push(response.data); 
-        })
-        .catch((error) => {
-          console.error("Error al crear el trámite:", error);
-        });
-    };
+  try {
+    const response = await Inertia.post(route('tramites.store'), { title });
 
+    // Verifica la respuesta para ver qué estructura tiene
+    console.log("Respuesta del servidor:", response);
+
+    // Si la respuesta es exitosa, agrega el trámite a la lista
+    if (response && response.data) {
+      tramites.value.push(response.data);
+    } else {
+      console.error("La respuesta no contiene datos esperados.");
+    }
+  } catch (error) {
+    console.error("Error al crear el trámite:", error);
+  }
+};
+
+
+
+    // Actualizar el estado de un trámite
     const updateStatus = (tramite, status) => {
       axios
         .put(`/tramites/${tramite.id}/update-status`, {
@@ -130,6 +163,7 @@ export default {
           observation: tramite.observation || "",
         })
         .then((response) => {
+          // Actualiza el estado del trámite
           tramite.status = status;
           console.log("Trámite actualizado:", response.data);
         })
@@ -138,10 +172,11 @@ export default {
         });
     };
 
-    return { tramites, generateTramite, updateStatus, auth: props.auth };
+    return { filteredTramites, generateTramite, updateStatus, auth: props.auth };
   },
 };
 </script>
+
 
 <style scoped>
   .btn-primary {

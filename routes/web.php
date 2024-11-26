@@ -9,6 +9,13 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TramiteController;
 use App\Http\Controllers\PlacaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CallBackController;
+use App\Http\Controllers\PagoFacilController;
+
+Route::post('/pagofacil/consultar', [PagoFacilController::class, 'consultar'])->name('pagofacil.consultar');
+Route::get('/ventas/create/{placa}', [PagoFacilController::class, 'create'])->name('ventas.create');
+Route::post('/pagofacil/generar', [PagoFacilController::class, 'generar'])->name('pagofacil.generar');
+Route::post('/pagofacil/callback', CallBackController::class)->name('pagofacil.callback');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -33,13 +40,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
-    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
-    Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('documents.update');
-    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create');
-    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
-    Route::put('/documents/{id}', [DocumentController::class, 'update'])->name('documents.update');
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index'); // Listar documentos
+    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create'); // Formulario de creación
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store'); // Guardar nuevo documento
+    Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit'); // Formulario de edición
+    Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('documents.update'); // Actualizar documento
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy'); // Eliminar documento
 });
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class)->except(['show']);

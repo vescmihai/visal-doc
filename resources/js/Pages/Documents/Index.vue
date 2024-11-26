@@ -3,7 +3,7 @@
     <div class="p-6 bg-gray-100 min-h-screen">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Documentos</h1>
-        <Link href="/documents/create" class="btn-primary">+ Crear Documento</Link>
+        <Link href="/documents/create" class="btn-primary">+ Subir Documento</Link>
       </div>
 
       <div v-if="documents.length" class="overflow-x-auto bg-white shadow-lg rounded-lg">
@@ -14,7 +14,7 @@
               <th class="px-6 py-3">Tipo</th>
               <th class="px-6 py-3">Trámite</th>
               <th class="px-6 py-3">Estado</th>
-              <th class="px-6 py-3">Observación</th>
+              <th v-if="auth.user.role !== 'cliente'"class="px-6 py-3">Observación</th>
               <th class="px-6 py-3 text-center">Acciones</th>
             </tr>
           </thead>
@@ -39,7 +39,7 @@
                   {{ doc.status || 'Desconocido' }}
                 </span>
               </td>
-              <td class="px-6 py-4">
+              <td v-if="auth.user.role !== 'cliente'" class="px-6 py-4">
                 <input
                   v-model="doc.observation"
                   placeholder="Añadir observación"
@@ -53,6 +53,7 @@
                 >
                   Ver
                 </button>
+                
                 <button
                   @click="updateStatus(doc, 'Aprobado')"
                   class="btn-success"
@@ -105,6 +106,9 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 export default {
   components: { Link, AuthenticatedLayout },
+  props: {
+    auth: Object, 
+  },
   setup() {
     const { props } = usePage();
     const documents = ref(props.documents || []);
