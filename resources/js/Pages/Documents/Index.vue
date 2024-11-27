@@ -52,26 +52,30 @@
                 />
               </td>
               <td class="px-6 py-4 flex gap-2 justify-center">
-                <button
-                  @click="viewDocument(doc)"
-                  class="btn-blue"
-                >
-                  Ver
-                </button>
-                
-                <button
-                  @click="updateStatus(doc, 'Aprobado')"
-                  class="btn-success"
-                >
-                  Aprobar
-                </button>
-                <button
-                  @click="updateStatus(doc, 'Rechazado')"
-                  class="btn-danger"
-                >
-                  Rechazar
-                </button>
-              </td>
+  <!-- Botón Ver: visible para todos los usuarios -->
+  <button
+    @click="viewDocument(doc)"
+    class="btn-blue"
+  >
+    Ver
+  </button>
+
+  <!-- Botones Aprobar y Rechazar: visibles solo para roles que no sean cliente -->
+  <template v-if="auth.user.role !== 'cliente'">
+    <button
+      @click="updateStatus(doc, 'Aprobado')"
+      class="btn-success"
+    >
+      Aprobar
+    </button>
+    <button
+      @click="updateStatus(doc, 'Rechazado')"
+      class="btn-danger"
+    >
+      Rechazar
+    </button>
+  </template>
+</td>
             </tr>
           </tbody>
         </table>

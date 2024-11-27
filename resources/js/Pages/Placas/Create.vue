@@ -6,18 +6,22 @@
       <form @submit.prevent="submit">
         <!-- Selección de Trámite -->
         <div class="mb-4">
-          <label for="tramite_id" class="block text-gray-700">Trámite</label>
-          <select
-            v-model="form.tramite_id"
-            id="tramite_id"
-            class="w-full px-4 py-2 border border-gray-300 rounded"
-            required
-          >
-            <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
-              {{ tramite.title || 'Sin título' }} ({{ tramite.status || 'Desconocido' }})
-            </option>
-          </select>
-        </div>
+  <label for="tramite_id" class="block text-gray-700">Trámite</label>
+  <select
+    v-model="form.tramite_id"
+    id="tramite_id"
+    class="w-full px-4 py-2 border border-gray-300 rounded"
+    required
+  >
+    <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
+      {{ tramite.title || 'Sin título' }} ({{ tramite.status || 'Desconocido' }})
+    </option>
+  </select>
+  <p v-if="!tramites.length" class="text-red-500 text-sm mt-2">
+    No se encontró ningún trámite aprobado, debe aprobar al menos un tramite para registrar la placa.
+  </p>
+</div>
+
 
         <!-- Número de Placa -->
         <div class="mb-4">
@@ -80,10 +84,10 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
-import { usePage } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, computed } from "vue";
+import { Inertia } from "@inertiajs/inertia";
+import { usePage } from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 export default {
   components: {
@@ -91,21 +95,31 @@ export default {
   },
   setup() {
     const { props } = usePage();
-    const tramites = ref(props.tramites || []);
+    const tramites = ref(props.tramites || []); // Lista de trámites desde el servidor
+    const placas = ref(props.placas || []); // Lista de placas ya registradas
+
+    // Filtrar trámites aprobados y sin placa asociada
+    const filteredTramites = computed(() => {
+      const tramiteIdsConPlaca = new Set(placas.value.map((placa) => placa.tramite_id));
+      return tramites.value.filter(
+        (tramite) => tramite.status === "Aprobado" && !tramiteIdsConPlaca.has(tramite.id)
+      );
+    });
+
     const form = ref({
-      tramite_id: '',
-      placa: '',
-      motor: '',
-      chasis: '',
-      poliza: '',
-      pago: 'Pendiente', 
+      tramite_id: "",
+      placa: "",
+      motor: "",
+      chasis: "",
+      poliza: "",
+      pago: "Pendiente", 
     });
 
     const submit = () => {
-      Inertia.post(route('placas.store'), form.value);
+      Inertia.post(route("placas.store"), form.value);
     };
 
-    return { tramites, form, submit };
+    return { tramites: filteredTramites, form, submit };
   },
 };
 </script>

@@ -69,4 +69,9 @@ class Tramite extends Model
     {
         return $query->where('status', $status);
     }
+
+    public function placa()
+    {
+        return $this->hasOne(Placa::class); // Un trámite puede tener una sola placa asociada
+    }
 }

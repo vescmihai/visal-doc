@@ -9,14 +9,24 @@ use Inertia\Inertia;
 
 class PlacaController extends Controller
 {
+    /**
+     * Mostrar el formulario de creación de una nueva placa.
+     */
     public function create()
     {
-        $tramites = Tramite::all(); 
-        return inertia('Placas/Create', [
+        // Obtener trámites aprobados que no tienen una placa asociada
+        $tramites = Tramite::where('status', 'Aprobado') // Filtrar trámites aprobados
+            ->whereDoesntHave('placa') // Excluir trámites que ya tienen una placa
+            ->get();
+
+        return Inertia::render('Placas/Create', [
             'tramites' => $tramites,
         ]);
     }
 
+    /**
+     * Guardar una nueva placa en la base de datos.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -39,6 +49,10 @@ class PlacaController extends Controller
 
         return redirect()->route('placas.index');
     }
+
+    /**
+     * Mostrar todas las placas existentes.
+     */
     public function index()
     {
         $placas = Placa::with('tramite')->get();
@@ -47,6 +61,9 @@ class PlacaController extends Controller
         ]);
     }
 
+    /**
+     * Eliminar una placa específica.
+     */
     public function destroy($id)
     {
         $placa = Placa::findOrFail($id);

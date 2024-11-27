@@ -7,7 +7,7 @@
         <button
           @click="generateTramite"
           class="btn-primary"
-          v-if="auth.user.role !== 'cliente'"
+          
         >
           + Generar Trámite
         </button>
@@ -33,7 +33,7 @@
               <th class="px-6 py-3">Estado</th>
               <!-- Solo mostrar columnas de Observación y Acciones si el usuario no es cliente -->
               <th v-if="auth.user.role !== 'cliente'" class="px-6 py-3">Observación</th>
-              <th v-if="auth.user.role !== 'cliente'" class="px-6 py-3 text-center">Acciones</th>
+              <th class="px-6 py-3 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -67,8 +67,9 @@
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:ring focus:ring-blue-200"
                 />
               </td>
+            
               <!-- Mostrar botones de acción solo si el usuario no es cliente -->
-              <td v-if="auth.user.role !== 'cliente'" class="px-6 py-4 flex gap-2 justify-center">
+              <td class="px-6 py-4 flex gap-2 justify-center">
                 <button
                   @click="viewDocuments(tramite.id)"
                   class="btn-yellow"
@@ -76,12 +77,14 @@
                   Documentos
                 </button>
                 <button
+                v-if="auth.user.role !== 'cliente'"
                   @click="updateStatus(tramite, 'Aprobado')"
                   class="btn-success"
                 >
                   Aprobar
                 </button>
                 <button
+                v-if="auth.user.role !== 'cliente'"
                   @click="updateStatus(tramite, 'Rechazado')"
                   class="btn-danger"
                 >
@@ -133,7 +136,7 @@ export default {
     const generateRandomTitle = () => {
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let randomTitle = '';
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 6; i++) {
         randomTitle += characters.charAt(Math.floor(Math.random() * characters.length));
       }
       return randomTitle;
