@@ -98,20 +98,43 @@
           <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
           <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
         </div>
+        <p>
+          Esta página fue visitada {{ visits }} {{ visits === 1 ? 'vez' : 'veces' }}.
+        </p>
+        
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
+const visits = ref(0); // Contador de visitas
 const { props } = usePage();
-
 const isAuthenticated = computed(() => !!props.auth?.user);
 
+// Navegación al formulario
 const navigateToForm = () => {
   window.location.href = '/solicitar-tramite';
 };
+
+// Actualizar contador de visitas
+const updateVisits = async () => {
+  try {
+    const pageUrl = window.location.pathname; // URL actual
+    const response = await axios.post('/page-visit', { page_url: pageUrl }); // Enviar URL al backend
+    visits.value = response.data.visits; // Actualizar visitas con la respuesta
+  } catch (error) {
+    console.error('Error al actualizar visitas:', error);
+  }
+};
+
+// Llamar al contador al cargar la página
+onMounted(() => {
+  updateVisits();
+});
 </script>

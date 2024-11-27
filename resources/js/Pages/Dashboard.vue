@@ -84,7 +84,7 @@
     import { ref } from 'vue';
   
     const navigateToForm = () => {
-      window.location.href = '/solicitar-tramite';
+      window.location.href = '/tramites';
     };
   </script>
   

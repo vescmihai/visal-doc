@@ -1,9 +1,6 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TramiteController;
@@ -11,49 +8,35 @@ use App\Http\Controllers\PlacaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CallBackController;
 use App\Http\Controllers\PagoFacilController;
+use App\Http\Middleware\TrackPageVisits;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\PageVisit;
 
-Route::post('/pagofacil/consultar', [PagoFacilController::class, 'consultar'])->name('pagofacil.consultar');
-Route::get('/ventas/create/{placa}', [PagoFacilController::class, 'create'])->name('ventas.create');
-Route::post('/pagofacil/generar', [PagoFacilController::class, 'generar'])->name('pagofacil.generar');
-Route::post('/pagofacil/callback', CallBackController::class)->name('pagofacil.callback');
+Route::post('/page-visit', function (Request $request) {
+    // Obtener la URL enviada desde el cliente
+    $pageUrl = $request->input('page_url', '/');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-});
+    // Buscar o crear un registro para la página específica
+    $pageVisit = PageVisit::firstOrCreate(['page_url' => $pageUrl]);
+    
+    // Incrementar el contador de visitas
+    $pageVisit->increment('visits');
 
-
-Route::middleware('auth')->group(function () {
-    Route::get('/placas', [PlacaController::class, 'index'])->name('placas.index');
-    Route::get('/placas/create', [PlacaController::class, 'create'])->name('placas.create');
-    Route::post('/placas', [PlacaController::class, 'store'])->name('placas.store');
-    Route::delete('/placas/{placa}', [PlacaController::class, 'destroy'])->name('placas.destroy');
-});
-
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/tramites', [TramiteController::class, 'index'])->name('tramites.index');
-    Route::get('/tramites/create', [TramiteController::class, 'create'])->name('tramites.create');
-    Route::post('/tramites', [TramiteController::class, 'store'])->name('tramites.store');
-    Route::get('/tramites/{tramite}/gestionar', [TramiteController::class, 'gestionar'])->name('tramites.gestionar');
-    Route::put('/tramites/{tramite}/update-observation', [TramiteController::class, 'updateObservation'])->name('tramites.update-observation');
-    Route::put('/tramites/{tramite}/update-status', [TramiteController::class, 'updateStatus'])->name('tramites.update-status');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
-    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create');
-    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
-    Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
-    Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('documents.update');
-    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
-});
+    return response()->json([
+        'visits' => $pageVisit->visits,
+    ]);
+})->name('page-visit.store');
 
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('users', UserController::class)->except(['show']);
-});
 
+
+
+Route::middleware(TrackPageVisits::class)->group(function () {
+// Rutas públicas
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -63,14 +46,59 @@ Route::get('/', function () {
     ]);
 });
 
-/*Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');*/
+// Rutas de autenticación
+require __DIR__ . '/auth.php';
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Rutas de Pago Fácil
+Route::prefix('pagofacil')->group(function () {
+    Route::post('/consultar', [PagoFacilController::class, 'consultar'])->name('pagofacil.consultar');
+    Route::post('/generar', [PagoFacilController::class, 'generar'])->name('pagofacil.generar');
+    Route::post('/callback', CallBackController::class)->name('pagofacil.callback');
 });
 
-require __DIR__.'/auth.php';
+Route::get('/ventas/create/{placa}', [PagoFacilController::class, 'create'])->name('ventas.create');
+
+// Rutas protegidas (requieren autenticación)
+Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Gestión de usuarios
+    Route::resource('users', UserController::class)->except(['show']);
+
+    // Gestión de documentos
+    Route::prefix('documents')->group(function () {
+        Route::get('/', [DocumentController::class, 'index'])->name('documents.index');
+        Route::get('/create', [DocumentController::class, 'create'])->name('documents.create');
+        Route::post('/', [DocumentController::class, 'store'])->name('documents.store');
+        Route::get('/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
+        Route::put('/{document}', [DocumentController::class, 'update'])->name('documents.update');
+        Route::delete('/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+    });
+
+    // Gestión de trámites
+    Route::prefix('tramites')->group(function () {
+        Route::get('/', [TramiteController::class, 'index'])->name('tramites.index');
+        Route::get('/create', [TramiteController::class, 'create'])->name('tramites.create');
+        Route::post('/', [TramiteController::class, 'store'])->name('tramites.store');
+        Route::get('/{tramite}/gestionar', [TramiteController::class, 'gestionar'])->name('tramites.gestionar');
+        Route::put('/{tramite}/update-observation', [TramiteController::class, 'updateObservation'])->name('tramites.update-observation');
+        Route::put('/{tramite}/update-status', [TramiteController::class, 'updateStatus'])->name('tramites.update-status');
+    });
+
+    // Gestión de placas
+    Route::prefix('placas')->group(function () {
+        Route::get('/', [PlacaController::class, 'index'])->name('placas.index');
+        Route::get('/create', [PlacaController::class, 'create'])->name('placas.create');
+        Route::post('/', [PlacaController::class, 'store'])->name('placas.store');
+        Route::delete('/{placa}', [PlacaController::class, 'destroy'])->name('placas.destroy');
+    });
+
+    // Gestión de perfiles
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+});
+});
