@@ -70,6 +70,12 @@
               <!-- Mostrar botones de acción solo si el usuario no es cliente -->
               <td v-if="auth.user.role !== 'cliente'" class="px-6 py-4 flex gap-2 justify-center">
                 <button
+                  @click="viewDocuments(tramite.id)"
+                  class="btn-yellow"
+                >
+                  Documentos
+                </button>
+                <button
                   @click="updateStatus(tramite, 'Aprobado')"
                   class="btn-success"
                 >
@@ -81,6 +87,7 @@
                 >
                   Rechazar
                 </button>
+                
               </td>
             </tr>
           </tbody>
@@ -157,22 +164,34 @@ export default {
 
     // Actualizar el estado de un trámite
     const updateStatus = (tramite, status) => {
-      axios
-        .put(`/tramites/${tramite.id}/update-status`, {
-          status: status,
-          observation: tramite.observation || "",
-        })
-        .then((response) => {
-          // Actualiza el estado del trámite
-          tramite.status = status;
-          console.log("Trámite actualizado:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error al actualizar el trámite:", error);
-        });
-    };
+  if (status === "Rechazado" && (!tramite.observation || tramite.observation.length < 5)) {
+    alert("Debe agregar una observación con al menos 5 caracteres para rechazar el trámite.");
+    return;
+  }
 
-    return { filteredTramites, generateTramite, updateStatus, auth: props.auth };
+  axios
+    .put(`/tramites/${tramite.id}/update-status`, {
+      status: status,
+      observation: tramite.observation || "",
+    })
+    .then((response) => {
+      // Actualiza el estado del trámite
+      tramite.status = status;
+      console.log("Trámite actualizado:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error al actualizar el trámite:", error);
+    });
+};
+
+
+const viewDocuments = (tramiteId) => {
+  Inertia.get(route('documents.index', { tramite_id: tramiteId }));
+};
+
+
+
+    return { filteredTramites, generateTramite, updateStatus, viewDocuments, auth: props.auth };
   },
 };
 </script>
@@ -214,4 +233,16 @@ export default {
   .btn-danger:hover {
     background-color: #ef4444; 
   }
+
+  .btn-yellow {
+  background-color: #f59e0b; 
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+.btn-yellow:hover {
+  background-color: #d97706;
+}
 </style>

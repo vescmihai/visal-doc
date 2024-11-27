@@ -3,7 +3,12 @@
     <div class="p-6 bg-gray-100 min-h-screen">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Documentos</h1>
-        <Link href="/documents/create" class="btn-primary">+ Subir Documento</Link>
+        <Link
+  :href="selectedTramiteId ? `/documents/create?tramite_id=${selectedTramiteId}` : '/documents/create'"
+  class="btn-primary"
+>
+  + Subir Documento
+</Link>
       </div>
 
       <div v-if="documents.length" class="overflow-x-auto bg-white shadow-lg rounded-lg">
@@ -107,15 +112,21 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 export default {
   components: { Link, AuthenticatedLayout },
   props: {
-    auth: Object, 
+    auth: Object,
+    tramites: Array, // Lista de trámites para el filtro
   },
   setup() {
-    const { props } = usePage();
-    const documents = ref(props.documents || []);
+    const { props, url } = usePage(); // Obtener props y URL desde Inertia
+    const params = new URLSearchParams(url.split("?")[1]); // Extraer los parámetros de la URL
+    const initialTramiteId = params.get("tramite_id") || null; // Obtener tramite_id de la URL, o null si no existe
+
+    const documents = ref(props.documents || []); // Documentos cargados inicialmente
+    const selectedTramiteId = ref(initialTramiteId); // Setear el tramite_id desde la URL
     const isModalOpen = ref(false);
     const fileUrl = ref("");
     const fileType = ref("");
 
+    // Función para ver un documento
     const viewDocument = (doc) => {
       const url = `/storage/${doc.file_path}`;
       fileUrl.value = url;
@@ -126,10 +137,12 @@ export default {
       isModalOpen.value = true;
     };
 
+    // Cerrar el modal de vista previa
     const closeModal = () => {
       isModalOpen.value = false;
     };
 
+    // Actualizar el estado de un documento
     const updateStatus = (doc, status) => {
       axios
         .put(`/documents/${doc.id}`, { status, observation: doc.observation || "" })
@@ -141,10 +154,40 @@ export default {
         });
     };
 
-    return { documents, updateStatus, viewDocument, closeModal, isModalOpen, fileUrl, fileType };
+    // Filtrar documentos por tramite_id seleccionado
+    const filterDocuments = () => {
+      const params = selectedTramiteId.value ? { tramite_id: selectedTramiteId.value } : {};
+      axios
+        .get("/documents", { params })
+        .then((response) => {
+          documents.value = response.data.props.documents; // Actualizar documentos filtrados
+        })
+        .catch((error) => {
+          console.error("Error al filtrar documentos:", error);
+        });
+    };
+
+    // Filtrar automáticamente si el tramite_id cambia
+    if (selectedTramiteId.value) {
+      filterDocuments(); // Filtrar documentos al cargar si hay un tramite_id en la URL
+    }
+
+    return {
+      documents,
+      tramites: props.tramites,
+      selectedTramiteId,
+      updateStatus,
+      viewDocument,
+      closeModal,
+      isModalOpen,
+      fileUrl,
+      fileType,
+      filterDocuments,
+    };
   },
 };
 </script>
+
 
 <style scoped>
 /* Botones */

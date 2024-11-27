@@ -40,13 +40,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index'); // Listar documentos
-    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create'); // Formulario de creación
-    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store'); // Guardar nuevo documento
-    Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit'); // Formulario de edición
-    Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('documents.update'); // Actualizar documento
-    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy'); // Eliminar documento
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create');
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
+    Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('documents.update');
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 });
+
 
 
 Route::middleware(['auth', 'verified'])->group(function () {

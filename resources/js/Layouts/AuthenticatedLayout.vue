@@ -51,12 +51,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Gestionar tramites
                                 </NavLink>
-                                <NavLink
+                                <!--<NavLink
                                     :href="route('documents.index')"
                                     :active="route().current('documents.index')"
                                 >
                                     Gestionar documentos
-                                </NavLink>
+                                </NavLink>-->
                                 <NavLink
                                     :href="route('placas.index')"
                                     :active="route().current('placas.index')"
