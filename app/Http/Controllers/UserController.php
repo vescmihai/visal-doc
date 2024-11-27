@@ -8,17 +8,20 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    // Mostrar usuarios con paginación
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate(10); // Paginación de 10 usuarios por página
         return inertia('Users/Index', compact('users'));
     }
 
+    // Mostrar formulario para crear usuario
     public function create()
     {
         return inertia('Users/Create');
     }
 
+    // Almacenar un nuevo usuario
     public function store(Request $request)
     {
         $request->validate([
@@ -35,14 +38,16 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'Usuario creado correctamente.');
     }
 
+    // Mostrar formulario de edición
     public function edit(User $user)
     {
         return inertia('Users/Edit', compact('user'));
     }
 
+    // Actualizar datos de un usuario existente
     public function update(Request $request, User $user)
     {
         $request->validate([
@@ -53,14 +58,13 @@ class UserController extends Controller
     
         $user->update($request->only('name', 'email', 'role'));
     
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
-    
 
-
+    // Eliminar un usuario
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
     }
 }

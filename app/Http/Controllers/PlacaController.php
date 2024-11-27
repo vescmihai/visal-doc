@@ -54,12 +54,15 @@ class PlacaController extends Controller
      * Mostrar todas las placas existentes.
      */
     public function index()
-    {
-        $placas = Placa::with('tramite')->get();
-        return Inertia::render('Placas/Index', [
-            'placas' => $placas,
-        ]);
-    }
+{
+    $placas = Placa::with('tramite')->paginate(10); // Paginar datos
+    return Inertia::render('Placas/Index', [
+        'placas' => $placas, // Enviar los datos paginados
+    ]);
+}
+
+
+
 
     /**
      * Eliminar una placa específica.
