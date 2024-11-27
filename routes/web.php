@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\PageVisit;
+use App\Http\Controllers\ReportController;
+
+Route::get('/api/reports/dashboard', [ReportController::class, 'generateDashboardReport'])->name('reports.dashboard');
+
 
 Route::post('/page-visit', function (Request $request) {
     // Obtener la URL enviada desde el cliente
