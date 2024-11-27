@@ -1,6 +1,9 @@
 <template>
   <AuthenticatedLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
+      <div v-if="successMessage" class="bg-green-100 text-green-800 px-4 py-2 rounded mb-6">
+        {{ successMessage }}
+      </div>
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Trámites</h1>
         <button @click="generateTramite" class="btn-primary">
@@ -119,9 +122,12 @@ import { computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
-const props = defineProps(["tramites", "auth"]);
+const props = defineProps(["tramites", "auth", "flash"]);
 
-const updateStatus = (tramite, status) => {
+
+const successMessage = props.flash?.success || null;
+
+const updateStatus = (tramite, status) => { 
   if (status === "Rechazado" && (!tramite.observation || tramite.observation.length < 5)) {
     alert("Debe agregar una observación con al menos 5 caracteres para rechazar el trámite.");
     return;
@@ -143,6 +149,32 @@ const changePage = (url) => {
     Inertia.get(url);
   }
 };
+const generateTramite = async () => {
+  const title = generateRandomTitle();
+  try {
+    const response = await Inertia.post(route('tramites.store'), { title });
+    // Verifica la respuesta para ver qué estructura tiene
+    console.log("Respuesta del servidor:", response);
+    // Si la respuesta es exitosa, agrega el trámite a la lista
+    if (response && response.data) {
+      tramites.value.push(response.data);
+    } else {
+      console.error("La respuesta no contiene datos esperados.");
+    }
+  } catch (error) {
+    console.error("Error al crear el trámite:", error);
+  }
+};
+
+const generateRandomTitle = () => {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let randomTitle = '';
+
+      for (let i = 0; i < 6; i++) {
+        randomTitle += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return randomTitle;
+    };
 
 const visiblePages = computed(() => {
   const currentPage = props.tramites.current_page;

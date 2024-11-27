@@ -1,6 +1,9 @@
 <template>
   <AuthenticatedLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
+      <div v-if="successMessage" class="bg-green-100 text-green-800 px-4 py-2 rounded mb-6">
+        {{ successMessage }}
+      </div>
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Usuarios</h1>
         <Link :href="route('users.create')" class="btn-primary">
@@ -104,9 +107,8 @@ import { Link } from "@inertiajs/vue3";
 import { Inertia } from "@inertiajs/inertia";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
-// Recibir la prop 'users' desde el backend
-const props = defineProps(["users"]); // Recibir usuarios con paginación
-
+const props = defineProps(["users", "flash"]);
+const successMessage = props.flash?.success || null;
 // Función para eliminar un usuario
 const destroy = (id) => {
   if (confirm("¿Estás seguro de eliminar este usuario?")) {
@@ -149,9 +151,6 @@ const visiblePages = computed(() => {
   );
 });
 </script>
-
-
-
 
 <style scoped>
 .btn-primary {

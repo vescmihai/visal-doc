@@ -29,48 +29,62 @@ class PlacaController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tramite_id' => 'required|exists:tramites,id',
-            'placa' => 'required|string|max:255',
-            'motor' => 'required|string|max:255',
-            'chasis' => 'required|string|max:255',
-            'poliza' => 'required|string|max:255',
-            'pago' => 'required|string',
-        ]);
+        try {
+            // Validar los datos de entrada
+            $validated = $request->validate([
+                'tramite_id' => 'required|exists:tramites,id',
+                'placa' => 'required|string|max:255',
+                'motor' => 'required|string|max:255',
+                'chasis' => 'required|string|max:255',
+                'poliza' => 'required|string|max:255',
+                'pago' => 'required|in:Pendiente,Pagado', // Validar el estado del pago
+            ]);
 
-        Placa::create([
-            'tramite_id' => $validated['tramite_id'],
-            'placa' => $validated['placa'],
-            'motor' => $validated['motor'],
-            'chasis' => $validated['chasis'],
-            'poliza' => $validated['poliza'],
-            'pago' => $validated['pago'],
-        ]);
+            // Crear la placa
+            Placa::create($validated);
 
-        return redirect()->route('placas.index');
+            // Redirigir con mensaje de éxito
+            return redirect()
+                ->route('placas.index')
+                ->with('success', 'Placa registrada exitosamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Capturar errores de validación y retornarlos al cliente
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            // Manejar otros errores
+            return redirect()
+                ->back()
+                ->with('error', 'Ocurrió un error al registrar la placa.')
+                ->withInput();
+        }
     }
 
     /**
      * Mostrar todas las placas existentes.
      */
     public function index()
-{
-    $placas = Placa::with('tramite')->paginate(10); // Paginar datos
-    return Inertia::render('Placas/Index', [
-        'placas' => $placas, // Enviar los datos paginados
-    ]);
-}
-
-
-
+    {
+        $placas = Placa::with('tramite')->paginate(10); // Paginar datos
+        return Inertia::render('Placas/Index', [
+            'placas' => $placas, // Enviar los datos paginados
+        ]);
+    }
 
     /**
      * Eliminar una placa específica.
      */
     public function destroy($id)
     {
+        // Buscar y eliminar la placa
         $placa = Placa::findOrFail($id);
         $placa->delete();
-        return response()->json(['message' => 'Placa eliminada exitosamente.']);
+
+        // Redirigir con mensaje de éxito
+        return redirect()
+            ->route('placas.index')
+            ->with('success', 'Placa eliminada exitosamente.');
     }
 }

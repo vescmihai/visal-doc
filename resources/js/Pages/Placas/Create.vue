@@ -2,26 +2,23 @@
   <AuthenticatedLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
       <h1 class="text-3xl font-bold mb-6 text-gray-800">Crear Nueva Placa</h1>
-      
+
       <form @submit.prevent="submit">
         <!-- Selección de Trámite -->
         <div class="mb-4">
-  <label for="tramite_id" class="block text-gray-700">Trámite</label>
-  <select
-    v-model="form.tramite_id"
-    id="tramite_id"
-    class="w-full px-4 py-2 border border-gray-300 rounded"
-    required
-  >
-    <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
-      {{ tramite.title || 'Sin título' }} ({{ tramite.status || 'Desconocido' }})
-    </option>
-  </select>
-  <p v-if="!tramites.length" class="text-red-500 text-sm mt-2">
-    No se encontró ningún trámite aprobado, debe aprobar al menos un tramite para registrar la placa.
-  </p>
-</div>
-
+          <label for="tramite_id" class="block text-gray-700">Trámite</label>
+          <select
+            v-model="form.tramite_id"
+            id="tramite_id"
+            class="w-full px-4 py-2 border border-gray-300 rounded"
+          >
+            <option value="" disabled>Seleccione un trámite</option>
+            <option v-for="tramite in tramites" :key="tramite.id" :value="tramite.id">
+              {{ tramite.title || 'Sin título' }} ({{ tramite.status || 'Desconocido' }})
+            </option>
+          </select>
+          <p v-if="errors.tramite_id" class="text-red-500 text-sm mt-1">{{ errors.tramite_id }}</p>
+        </div>
 
         <!-- Número de Placa -->
         <div class="mb-4">
@@ -31,8 +28,8 @@
             id="placa"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded"
-            required
           />
+          <p v-if="errors.placa" class="text-red-500 text-sm mt-1">{{ errors.placa }}</p>
         </div>
 
         <!-- Número de Motor -->
@@ -43,8 +40,8 @@
             id="motor"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded"
-            required
           />
+          <p v-if="errors.motor" class="text-red-500 text-sm mt-1">{{ errors.motor }}</p>
         </div>
 
         <!-- Número de Chasis -->
@@ -55,8 +52,8 @@
             id="chasis"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded"
-            required
           />
+          <p v-if="errors.chasis" class="text-red-500 text-sm mt-1">{{ errors.chasis }}</p>
         </div>
 
         <!-- Póliza -->
@@ -67,8 +64,8 @@
             id="poliza"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded"
-            required
           />
+          <p v-if="errors.poliza" class="text-red-500 text-sm mt-1">{{ errors.poliza }}</p>
         </div>
 
         <!-- Botón de guardar -->
@@ -95,8 +92,8 @@ export default {
   },
   setup() {
     const { props } = usePage();
-    const tramites = ref(props.tramites || []); // Lista de trámites desde el servidor
-    const placas = ref(props.placas || []); // Lista de placas ya registradas
+    const tramites = ref(props.tramites || []);
+    const placas = ref(props.placas || []);
 
     // Filtrar trámites aprobados y sin placa asociada
     const filteredTramites = computed(() => {
@@ -106,20 +103,34 @@ export default {
       );
     });
 
+    // Formulario reactivo
     const form = ref({
       tramite_id: "",
       placa: "",
       motor: "",
       chasis: "",
       poliza: "",
-      pago: "Pendiente", 
+      pago: "Pendiente",
     });
 
+    // Errores
+    const errors = ref({});
+
+    // Enviar el formulario
     const submit = () => {
-      Inertia.post(route("placas.store"), form.value);
+      Inertia.post(route("placas.store"), form.value, {
+        onError: (errorBag) => {
+          // Capturar errores del servidor
+          errors.value = errorBag;
+        },
+        onSuccess: () => {
+          // Resetear errores si la solicitud fue exitosa
+          errors.value = {};
+        },
+      });
     };
 
-    return { tramites: filteredTramites, form, submit };
+    return { tramites: filteredTramites, form, submit, errors };
   },
 };
 </script>

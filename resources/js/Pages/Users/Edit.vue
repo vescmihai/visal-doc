@@ -14,7 +14,9 @@
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="Ingrese el nombre del usuario"
           />
+          <p v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</p>
         </div>
+
         
         <div class="flex flex-col">
           <label for="email" class="text-gray-700 font-medium mb-2">Email:</label>

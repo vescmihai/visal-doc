@@ -9,38 +9,38 @@ use Inertia\Inertia;
 class TramiteController extends Controller
 {
     public function index()
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    // Determinar si es cliente o no para filtrar los trámites
-    $query = Tramite::with('user:id,name'); // Incluir relación con el usuario
+        // Determinar si es cliente o no para filtrar los trámites
+        $query = Tramite::with('user:id,name'); // Incluir relación con el usuario
 
-    if ($user->role === 'cliente') {
-        // Filtrar trámites solo para el cliente autenticado
-        $query->where('user_id', $user->id);
+        if ($user->role === 'cliente') {
+            // Filtrar trámites solo para el cliente autenticado
+            $query->where('user_id', $user->id);
+        }
+
+        // Paginación (10 trámites por página)
+        $tramites = $query->paginate(10);
+
+        // Transformar los datos para enviar solo lo necesario al frontend
+        $tramites->getCollection()->transform(function ($tramite) {
+            return [
+                'id' => $tramite->id,
+                'title' => $tramite->title,
+                'status' => $tramite->status,
+                'client_name' => $tramite->user->name ?? 'N/A',
+                'user_id' => $tramite->user_id,
+                'observation' => $tramite->observation,
+                'created_at' => $tramite->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $tramite->updated_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return Inertia::render('Tramites/Index', [
+            'tramites' => $tramites, // Enviar objeto paginado
+        ]);
     }
-
-    // Paginación (10 trámites por página)
-    $tramites = $query->paginate(10);
-
-    // Transformar los datos para enviar solo lo necesario al frontend
-    $tramites->getCollection()->transform(function ($tramite) {
-        return [
-            'id' => $tramite->id,
-            'title' => $tramite->title,
-            'status' => $tramite->status,
-            'client_name' => $tramite->user->name ?? 'N/A',
-            'user_id' => $tramite->user_id,
-            'observation' => $tramite->observation,
-            'created_at' => $tramite->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $tramite->updated_at->format('Y-m-d H:i:s'),
-        ];
-    });
-
-    return Inertia::render('Tramites/Index', [
-        'tramites' => $tramites, // Enviar objeto paginado
-    ]);
-}
 
 
     public function create()
@@ -91,7 +91,7 @@ class TramiteController extends Controller
     public function updateObservation(Request $request, Tramite $tramite)
     {
         $request->validate([
-            'observation' => 'required|string',
+            'observation' => 'required|string|min:4|max:16',
         ]);
 
         $tramite->observation = $request->observation;

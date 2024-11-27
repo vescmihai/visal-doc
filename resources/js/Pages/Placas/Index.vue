@@ -1,7 +1,11 @@
 <template>
   <AuthenticatedLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
+      <div v-if="successMessage" class="bg-green-100 text-green-800 px-4 py-2 rounded mb-6">
+        {{ successMessage }}
+      </div>
       <div class="flex items-center justify-between mb-6">
+        
         <h1 class="text-4xl font-extrabold text-gray-800">Gestión de Placas</h1>
         <Link href="/placas/create" class="btn-primary">+ Registrar Placa</Link>
       </div>
@@ -100,11 +104,11 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
-import { Inertia } from '@inertiajs/inertia';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
+import { Inertia } from "@inertiajs/inertia";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 export default {
   components: {
@@ -113,53 +117,78 @@ export default {
   },
   setup() {
     const { props } = usePage();
-    const placasData = props.placas || {};
-    const placas = ref(placasData.data || []);
-    const currentPage = placasData.current_page || 1;
-    const lastPage = placasData.last_page || 1;
 
-    // Función para editar placa
+    // Mensaje de éxito
+    const successMessage = ref(props.flash?.success || null);
+
+    // Datos de placas
+    const placasData = ref(props.placas || {});
+    const placas = ref(placasData.value.data || []);
+    const currentPage = ref(placasData.value.current_page || 1);
+    const lastPage = ref(placasData.value.last_page || 1);
+
+    const submit = () => {
+      Inertia.post(route('placas.store'), form.value, {
+        onError: (errorBag) => {
+          // Manejo de errores de validación
+          errors.value = errorBag;
+        },
+        onSuccess: () => {
+          // Limpiar errores en caso de éxito
+          errors.value = {};
+        },
+      });
+    };
+
+
+    // Función para editar una placa
     const editPlaca = (placa) => {
       Inertia.visit(`/ventas/create/${placa.id}`);
     };
 
-    // Función para eliminar placa
-    const deletePlaca = (placaId) => {
-      if (confirm('¿Estás seguro de eliminar esta placa?')) {
-        Inertia.delete(`/placas/${placaId}`, {
-          onSuccess: () => {
-            Inertia.reload({ only: ['placas'] });
-          },
-          onError: (error) => {
-            console.error('Error al eliminar la placa:', error);
-          },
-        });
+    // Función para eliminar una placa
+    const deletePlaca = async (placaId) => {
+      if (confirm("¿Estás seguro de eliminar esta placa?")) {
+        try {
+          await Inertia.delete(`/placas/${placaId}`, {
+            onSuccess: () => {
+              // Mostrar mensaje de éxito y recargar datos
+              successMessage.value = "Placa eliminada exitosamente.";
+              Inertia.reload({ only: ["placas"] });
+            },
+            onError: (error) => {
+              console.error("Error al eliminar la placa:", error);
+            },
+          });
+        } catch (error) {
+          console.error("Error al procesar la eliminación:", error);
+        }
       }
     };
 
-    // Cambiar página
+    // Función para cambiar de página
     const changePage = (url) => {
       if (url) {
         Inertia.get(url, {}, { preserveState: true, replace: true });
       }
     };
 
-    // Páginas visibles (máximo 3 botones numerados)
+    // Cálculo de páginas visibles (máximo 3 botones numerados)
     const visiblePages = computed(() => {
-      let startPage = currentPage - 1;
-      let endPage = currentPage + 1;
+      let startPage = currentPage.value - 1;
+      let endPage = currentPage.value + 1;
 
       if (startPage < 1) {
         startPage = 1;
-        endPage = Math.min(3, lastPage);
+        endPage = Math.min(3, lastPage.value);
       }
 
-      if (endPage > lastPage) {
-        endPage = lastPage;
-        startPage = Math.max(lastPage - 2, 1);
+      if (endPage > lastPage.value) {
+        endPage = lastPage.value;
+        startPage = Math.max(lastPage.value - 2, 1);
       }
 
-      return placasData.links.filter((link) => {
+      return placasData.value.links.filter((link) => {
         if (isNaN(link.label)) {
           return false;
         }
@@ -169,6 +198,7 @@ export default {
     });
 
     return {
+      successMessage,
       placas,
       placasData,
       editPlaca,
@@ -179,6 +209,7 @@ export default {
   },
 };
 </script>
+
 
 
 
