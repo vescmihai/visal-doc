@@ -16,11 +16,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class, 
             TramiteSeeder::class,
+            DocumentSeeder::class,
+            PlacaSeeder::class,
         ]);
-        $this->call(DocumentSeeder::class);
-        $this->call(PlacaSeeder::class);
-
-
     }
-    
 }

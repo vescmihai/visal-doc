@@ -18,7 +18,7 @@ class PlacaSeeder extends Seeder
         }
 
         // Generar 30 placas asociadas al trámite con tramite_id = 1
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             Placa::create([
                 'tramite_id' => 1,
                 'placa' => Str::upper(Str::random(8)), // Generar una placa alfanumérica aleatoria
@@ -33,7 +33,7 @@ class PlacaSeeder extends Seeder
         $otherTramiteIds = Tramite::where('id', '!=', 1)->pluck('id');
 
         // Generar 20 placas asociadas a trámites aleatorios
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             Placa::create([
                 'tramite_id' => $otherTramiteIds->random(), // Seleccionar un trámite aleatorio
                 'placa' => Str::upper(Str::random(8)),

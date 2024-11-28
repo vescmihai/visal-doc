@@ -15,6 +15,16 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\PageVisit;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\NotificationController;
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAsRead');
+
+
+
+Route::get('/search', [SearchController::class, 'search'])->name('search');
+
 
 Route::get('/api/reports/dashboard', [ReportController::class, 'generateDashboardReport'])->name('reports.dashboard');
 
@@ -88,6 +98,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{tramite}/gestionar', [TramiteController::class, 'gestionar'])->name('tramites.gestionar');
         Route::put('/{tramite}/update-observation', [TramiteController::class, 'updateObservation'])->name('tramites.update-observation');
         Route::put('/{tramite}/update-status', [TramiteController::class, 'updateStatus'])->name('tramites.update-status');
+        Route::put('/tramites/{tramite}/update-status', [TramiteController::class, 'updateStatus'])
+        ->name('tramites.updateStatus');
+    
     });
 
     // Gestión de placas

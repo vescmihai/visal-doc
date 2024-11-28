@@ -24,7 +24,7 @@ class TramiteSeeder extends Seeder
         }
 
         // Generar 50 trámites aleatorios
-        Tramite::factory(50)->create([
+        Tramite::factory(8)->create([
             'user_id' => $users->random()->id, // Asignar un usuario aleatorio a cada trámite
         ]);
     }

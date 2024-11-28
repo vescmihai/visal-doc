@@ -25,7 +25,7 @@ class DocumentSeeder extends Seeder
         }
 
         // Crear 30 documentos con tramite_id = 1
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 8; $i++) {
             DB::table('documents')->insert([
                 'user_id' => $users->random()->id, // Seleccionar un usuario aleatorio
                 'tramite_id' => 1, // Asignar tramite_id fijo
@@ -39,7 +39,7 @@ class DocumentSeeder extends Seeder
         }
 
         // Crear el resto de los documentos asignando tramite_id al azar
-        $remainingDocuments = 50 - 30; // Total 50 documentos
+        $remainingDocuments = 5; // Total 50 documentos
         for ($i = 0; $i < $remainingDocuments; $i++) {
             DB::table('documents')->insert([
                 'user_id' => $users->random()->id, // Seleccionar un usuario aleatorio

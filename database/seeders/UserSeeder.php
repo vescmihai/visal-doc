@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
 
         // Insertar 50 usuarios aleatorios
         $randomUsers = [];
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 8; $i++) {
             $randomUsers[] = [
                 'name' => 'Usuario_' . Str::random(5),
                 'email' => 'user_' . $i . '@example.com',

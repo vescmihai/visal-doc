@@ -69,24 +69,27 @@ class TramiteController extends Controller
 
     public function updateStatus(Request $request, Tramite $tramite)
     {
-        $request->validate([
-            'status' => 'required|string',
-            'observation' => 'nullable|string', 
+        $validatedData = $request->validate([
+            'status' => 'required|string|in:Aprobado,Rechazado,Pendiente', // Validar los estados permitidos
+            'observation' => 'nullable|string|min:5', // Validar observación con un mínimo de 5 caracteres
         ]);
-        
-        $tramite->status = $request->status;
-        
-        if ($request->has('observation')) {
-            $tramite->observation = $request->observation;
-        }
-        
-        $tramite->save();
-        
+
+        // Actualizar el estado y observación del trámite
+        $tramite->update([
+            'status' => $validatedData['status'],
+            'observation' => $validatedData['observation'] ?? null,
+        ]);
+
+        // Enviar notificación al cliente
+        $tramite->user->notify(new \App\Notifications\TramiteStatusUpdated($tramite));
+
+        // Retornar respuesta JSON
         return response()->json([
-            'message' => 'Estado y observación actualizados correctamente',
+            'message' => 'Estado y observación actualizados correctamente.',
             'tramite' => $tramite
         ]);
     }
+
 
     public function updateObservation(Request $request, Tramite $tramite)
     {

@@ -11,7 +11,7 @@ export default defineConfig({
         vue({
             template: {
                 transformAssetUrls: {
-                    base: null,
+                    base: 'inf513/grupo22sa/proyecto02/public/',
                     includeAbsolute: false,
                 },
             },
